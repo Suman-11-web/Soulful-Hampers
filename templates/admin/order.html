@@ -1,0 +1,68 @@
+{% extends "admin/base.html" %}
+{% block studio %}
+  <div class="checkout-layout">
+    <div class="stack">
+      <section class="panel">
+        <h2>Buyer &amp; delivery</h2>
+        <dl class="details">
+          {% for k,v in [('Received',order.created|nice_time),('Buyer',order.name),('Mobile',order.phone),('Email',order.email),('Recipient',order.recipient),('Address',order.address),('Town / city',order.city),('PIN code',order.postcode),('Preferred date',order.delivery_date|nice_date),('Gift note',order.message)] %}
+            <dt>{{ k }}</dt>
+            <dd>
+              {{ v or '—' }}
+            </dd>
+          {% endfor %}
+        </dl>
+      </section>
+      <section class="panel">
+        <h2>Order items</h2>
+        {% for i in items %}
+          <div class="line-item">
+            <span>{{ i.name }} · {{ i.price|money }} × {{ i.qty }}</span>
+            <b>{{ i.subtotal|money }}</b>
+          </div>
+        {% endfor %}
+        <div class="total">
+          <span>Total</span>
+          <strong>{{ order.total|money }}</strong>
+        </div>
+      </section>
+    </div>
+    <div class="stack">
+      <form method="post" class="panel stack">
+        {{ token() }}
+        <h2>Review payment &amp; order</h2>
+        <div class="receipt small-receipt">
+          <span>Submitted UPI reference</span>
+          <b>{{ order.utr }}</b>
+        </div>
+        <label>
+          Payment status<select name="payment">
+          {% for v in payments %}
+            <option {{ 'selected' if order.payment==v }}>{{ v }}</option>
+          {% endfor %}
+          </select>
+        </label>
+        <label>
+          Order status<select name="status">
+          {% for v in statuses %}
+            <option {{ 'selected' if order.status==v }}>{{ v }}</option>
+          {% endfor %}
+          </select>
+        </label>
+        <label>
+          Internal notes<textarea name="internal_note" maxlength="3000">{{ order.internal_note }}</textarea>
+        </label>
+        <button class="btn primary">Save update</button>
+      </form>
+      <section class="panel">
+        <h2>Status history</h2>
+        {% for e in events %}
+          <div class="event">
+            <small>{{ e.happened|nice_time }}</small>
+            <p>{{ e.detail }}</p>
+          </div>
+        {% endfor %}
+      </section>
+    </div>
+  </div>
+{% endblock %}

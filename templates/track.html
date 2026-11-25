@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% from 'parts/ui.html' import tracker with context %}
+{% block content %}
+  {% set intro = "Find the latest payment and delivery status with your order ID or buyer mobile number." %}
+  {% include "parts/page_head.html" %}
+  <div class="wrap page-body">
+    <section class="panel narrow">
+      <h2>Look up an order</h2>{{ tracker() }}{% if request.method=="POST" %}
+      <div class="lookup-results" role="status">
+        {% for r in rows %}
+          <article class="track-result">
+            <div class="row-between">
+              <h3>{{ r.id }}</h3>
+              <small>{{ r.created|nice_date }}</small>
+            </div>
+            <dl>
+              <dt>Order status</dt>
+              <dd>
+                {{ r.status }}
+              </dd>
+              <dt>Payment</dt>
+              <dd>
+                {{ r.payment }}
+              </dd>
+            </dl>
+            <a class="text-link" href="/contact?order={{ r.id }}">Enquire about this order</a>
+          </article>
+        {% else %}
+          <p>No matching orders found. Check the ID or use the buyer’s mobile number.</p>
+          <a class="text-link" href="/contact">Contact the studio</a>
+        {% endfor %}
+      </div>
+{% endif %}
+</section>
+</div>
+{% endblock %}

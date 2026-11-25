@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block content %}
+  {% include "parts/page_head.html" %}
+  <div class="wrap page-body">
+    {% if lines %}
+      <div class="checkout-layout">
+        <div class="panel">
+          {% for i in lines %}
+            <article class="bag-row">
+              <a href="/products/{{ i.id }}">
+                <img src="{{ url_for('media',name=i.cover) }}" alt="{{ i.name }}">
+              </a>
+              <div>
+                <a class="item-name" href="/products/{{ i.id }}">{{ i.name }}</a>
+                <p>{{ i.price|money }} each</p>
+                <form class="inline-form" method="post" action="/cart/{{ i.id }}">
+                  {{ token() }}<input class="qty"
+                                      type="number"
+                                      aria-label="Quantity for {{ i.name }}"
+                                      name="quantity"
+                                      min="1"
+                                      max="99"
+                                      value="{{ i.qty }}"
+                                      required>
+                  <button class="link-btn" name="action" value="update">Update</button>
+                  <button class="icon-btn"
+                          name="action"
+                          value="remove"
+                          formnovalidate
+                          aria-label="Remove {{ i.name }}">{{ icon("trash") }}</button>
+                </form>
+              </div>
+              <b>{{ i.subtotal|money }}</b>
+            </article>
+          {% endfor %}
+        </div>
+        <aside class="panel summary">
+          <h2>Order summary</h2>
+          <div class="total">
+            <span>Total</span>
+            <strong>{{ total|money }}</strong>
+          </div>
+          <a class="btn primary full" href="/checkout">Continue to checkout</a>
+          <a class="text-link center" href="/shop">Continue shopping</a>
+        </aside>
+      </div>
+    {% else %}
+      <div class="empty">
+        <span class="medallion">{{ icon("bag") }}</span>
+        <h2>Your bag is empty</h2>
+        <p>Explore the collections or create something personal with the studio.</p>
+        <a class="btn primary" href="/shop">Explore the shop</a>
+      </div>
+    {% endif %}
+  </div>
+{% endblock %}

@@ -1,0 +1,92 @@
+{% extends "admin/base.html" %}
+{% block studio %}
+  <form method="post" enctype="multipart/form-data" class="stack">
+    {{ token() }}
+    <section class="panel">
+      <h2>Payment &amp; WhatsApp</h2>
+      <div class="fields">
+        <label>
+          Business WhatsApp number<input type="tel"
+                                         name="whatsapp"
+                                         placeholder="Country code and number"
+                                         value="{{ request.form.get('whatsapp',conf.whatsapp) }}">
+          <small>Used for quick orders and order confirmations.</small>
+        </label>
+        <label>
+          UPI payee name<input name="payee" value="{{ request.form.get('payee',conf.payee) }}">
+        </label>
+        <label>
+          Upload payment QR<input type="file" name="qr" accept="image/png,image/jpeg,image/webp">
+          <small>Use the shop’s UPI QR image. A new upload replaces the active QR.</small>
+        </label>
+        {% if qr %}
+          <div>
+            <img class="qr-preview" src="{{ qr }}" alt="Active shop payment QR">
+            <label class="check">
+              <input type="checkbox" name="disable_qr">
+              Disable QR payments
+            </label>
+          </div>
+        {% else %}
+          <p class="muted">Checkout will open for payments once a QR is available.</p>
+        {% endif %}
+      </div>
+    </section>
+    <section class="panel">
+      <h2>Social profiles</h2>
+      <div class="fields">
+        {% for key in ['instagram','youtube','facebook'] %}
+          <label>
+            {{ key|title }} profile URL<input type="url"
+                                              name="{{ key }}"
+                                              maxlength="600"
+                                              value="{{ request.form.get(key,conf[key]) }}">
+          </label>
+        {% endfor %}
+      </div>
+    </section>
+    <section class="panel">
+      <h2>Storefront content</h2>
+      <div class="fields">
+        {% for k,label in [('hero_title','Headline, first line'),('hero_second','Headline, second line'),('hero_copy','Hero description'),('announcement','Delivery announcement'),('region','Service region'),('email','Contact email'),('delivery_info','Delivery information'),('quick_title','Quick-order heading'),('quick_copy','Quick-order message')] %}
+          <label>{{ label }}{% if k in ("hero_copy","delivery_info","quick_copy") %}
+            <textarea name="{{ k }}" maxlength="600" required>{{ request.form.get(k,conf[k]) }}</textarea>
+        {% else %}
+          <input name="{{ k }}"
+                 type="{{ 'email' if k=='email' else 'text' }}"
+                 maxlength="600"
+                 {{ 'required' if k!='email' }}
+                 value="{{ request.form.get(k,conf[k]) }}">
+        {% endif %}
+      </label>
+{% endfor %}
+</div>
+</section>
+<div>
+  <button class="btn primary">Save store settings</button>
+</div>
+</form>
+<form method="post"
+      action="/admin/settings/artwork"
+      enctype="multipart/form-data"
+      class="panel stack section-space">
+  {{ token() }}
+  <h2>Storefront artwork</h2>
+  <div class="fields">
+    <label>
+      Image to update<select name="art_key">
+      {% for key,label in artwork.items() %}
+        <option value="{{ key }}">{{ label }}</option>
+      {% endfor %}
+      </select>
+    </label>
+    <label>
+      Replacement image<input type="file" name="art_file" accept="image/png,image/jpeg,image/webp">
+    </label>
+  </div>
+  <div class="inline-form">
+    <button class="btn primary">Update artwork</button>
+    <button class="btn outline" name="action" value="restore">Restore reference image</button>
+  </div>
+</form>
+{% endblock %}

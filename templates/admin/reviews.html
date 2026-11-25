@@ -1,0 +1,42 @@
+{% extends "admin/base.html" %}
+{% block studio %}
+  <div class="stack">
+    {% for r in [none]+rows %}
+      <form method="post" class="panel stack">
+        {{ token() }}
+        <h2>{{ 'Add a review' if not r else 'Edit review' }}</h2>
+        {% if r %}
+          <input type="hidden" name="id" value="{{ r.id }}">
+        {% endif %}
+        <div class="fields">
+          <label>
+            Reviewer name<input name="name" maxlength="90" required value="{{ r.name if r else '' }}">
+          </label>
+          <label>
+            Rating<select name="stars">
+            {% for n in [5,4,3,2,1] %}
+              <option value="{{ n }}" {{ 'selected' if r and r.stars==n }}>{{ n }} stars</option>
+            {% endfor %}
+            </select>
+          </label>
+          <label class="wide">
+            Review<textarea name="review" maxlength="1200" required>{{ r.review if r else '' }}</textarea>
+          </label>
+        </div>
+        <label class="check">
+          <input type="checkbox" name="visible" {{ 'checked' if not r or r.visible }}> Publish on storefront
+        </label>
+        <div class="inline-form">
+          <button class="btn primary small">Save review</button>
+          {% if r %}
+            <button class="btn outline small"
+                    name="action"
+                    value="delete"
+                    formnovalidate
+                    data-confirm-click="Delete this review?">Delete</button>
+          {% endif %}
+        </div>
+      </form>
+    {% endfor %}
+  </div>
+{% endblock %}

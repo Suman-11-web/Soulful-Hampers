@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% from 'parts/ui.html' import product_card with context %}
+{% block content %}
+  {% include "parts/page_head.html" %}
+  <div class="wrap page-body">
+    <div class="collection-tabs" aria-label="Collections">
+      <a href="/shop" class="{{ 'selected' if not slug }}">All gifts</a>
+      {% for k,v in categories.items() %}
+        <a href="/collections/{{ k }}" class="{{ 'selected' if k==slug }}">{{ v[0] }}</a>
+      {% endfor %}
+    </div>
+    <div class="shop-tools">
+      <p>{{ products|length }} {{ 'gift' if products|length==1 else 'gifts' }}{% if query %} matching “{{ query }}”{% endif %}
+      </p>
+      <form class="inline-form" method="get">
+        <input type="search"
+               aria-label="Search this collection"
+               name="q"
+               value="{{ query }}"
+               placeholder="Search gifts"
+               maxlength="120">
+        <select aria-label="Sort gifts" name="sort">
+          {% for key,label in [('newest','Newest first'),('price-low','Price: low to high'),('price-high','Price: high to low')] %}
+            <option value="{{ key }}" {{ 'selected' if sort==key }}>{{ label }}</option>
+          {% endfor %}
+        </select>
+        <button class="btn soft small">Apply</button>
+      </form>
+    </div>
+    {% if products %}
+      <div class="product-grid">{% for p in products %}{{ product_card(p) }}{% endfor %}</div>
+    {% else %}
+      <div class="empty">
+        <span class="medallion">{{ icon("gift") }}</span>
+        <h2>{{ 'No gifts match your search' if query else 'This collection is being prepared' }}</h2>
+        <p>{{ 'Try another name or explore all collections.' if query else 'Have something in mind? Our studio can help you plan a custom gift.' }}</p>
+        <a class="btn outline"
+           href="{{ '/shop' if query else '/customize' }}">{{ 'Browse all gifts' if query else 'Customize a gift' }}</a>
+      </div>
+    {% endif %}
+  </div>
+{% endblock %}

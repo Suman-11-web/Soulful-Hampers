@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% from 'parts/ui.html' import section_title, product_card, review_card, tracker with context %}
+{% block content %}
+  <section class="hero">
+    <div class="hero-art"
+         role="img"
+         aria-label="Red rose bouquet wrapped in blush paper beside a personalised gift hamper"></div>
+    <div class="wrap hero-inner">
+      <div class="hero-copy">
+        <p class="eyebrow">
+          <span class="hairline"></span> Premium gifts · Bouquets · Hampers
+        </p>
+        <h1>
+          {{ site.hero_title }}
+          <br>
+          <em>{{ site.hero_second }}</em>
+          <span class="hero-heart" aria-hidden="true">♡</span>
+        </h1>
+        <p class="hero-description">{{ site.hero_copy }}</p>
+        <div class="hero-actions">
+          <a class="btn primary" href="/shop">{{ icon("bag") }} Shop Now</a>
+          <a class="btn outline" href="/customize">{{ icon("pen") }} Customize Gift</a>
+        </div>
+        <div class="perks">
+          {% for ico, top, bottom in [('truck','Same-Day','Delivery'),('heart','Personalised','Options'),('gift','Perfect for','All Occasions')] %}
+            <div>
+              {{ icon(ico) }}<span>{{ top }}
+              <br>
+              {{ bottom }}</span>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </section>
+  <div class="home-body">
+    <section class="wrap categories-section">
+      {{ section_title("Shop by Category") }}
+      <div class="heading-flourish" aria-hidden="true">
+        <i>
+        </i>♡<i>
+        </i>
+      </div>
+      <div class="category-grid">
+        {% for k,v in categories.items() %}
+          <a class="category-card" href="/collections/{{ k }}">
+            <div class="cat-img">
+              <img src="{{ url_for('artwork',key=k) }}" width="185" height="112" alt="">
+            </div>
+            <div class="cat-label">{{ v[0] }}{{ icon("arrow") }}</div>
+          </a>
+        {% endfor %}
+      </div>
+    </section>
+    <section class="wrap best-section">
+      {{ section_title("Our Best Sellers") }}
+      <p class="section-note">Customer favourites loved for their thoughtfulness &amp; elegance</p>
+      {% if featured %}
+        <div class="product-grid">{% for p in featured %}{{ product_card(p) }}{% endfor %}</div>
+      {% endif %}
+    </section>
+    <section class="wrap steps-section">
+      <div class="steps-paper">
+        {{ section_title("Customize & Order in 4 Simple Steps") }}
+        <div class="steps">
+          {% for ico, label, desc in [('bag','Choose a Product','Explore hampers, bouquets and gift options.'),('pen','Customize It','Add a name, a message, or a special request.'),('calendar','Place Your Order','Choose a date and share your delivery details.'),('truck','Get It Delivered','We deliver your thoughtful gift with care.')] %}
+            <div class="step">
+              <span class="step-icon">{{ icon(ico) }}</span>
+              <h3>{{ loop.index }}. {{ label }}</h3>
+              <p>{{ desc }}</p>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+    <section class="wrap review-section">
+      {{ section_title("What Our Customers Say") }}
+      <div class="review-grid">{% for r in reviews %}{{ review_card(r) }}{% endfor %}</div>
+      <a class="text-link review-more" href="/reviews">Visit customer reviews</a>
+    </section>
+    <div class="wrap">
+      <section class="quick-order">
+        <span class="quick-heart" aria-hidden="true">♡</span>
+        <div>
+          <h2>{{ site.quick_title }}</h2>
+          <p>{{ site.quick_copy }}</p>
+        </div>
+        {% if site.whatsapp %}
+          <a class="btn whatsapp"
+             target="_blank"
+             rel="noopener"
+             href="{{ whatsapp('Hello Soulful Hampers! I would like to place a quick order.') }}">{{ icon("chat") }} Order on WhatsApp</a>
+        {% else %}
+          <a class="btn light" href="/contact">{{ icon("mail") }} Enquire with the studio</a>
+        {% endif %}
+      </section>
+      <section class="home-track" id="track">
+        <div>
+          {{ icon("box") }}
+          <h2>Track your order</h2>
+        </div>
+        {{ tracker() }}
+      </section>
+    </div>
+  </div>
+{% endblock %}

@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% block content %}
+  {% include "parts/page_head.html" %}
+  <div class="wrap page-body">
+    <form method="post" class="checkout-layout">
+      {{ token() }}<input type="hidden" name="quote" value="{{ quote.token }}">
+      <div class="panel form-panel">
+        <h2>Buyer &amp; delivery details</h2>
+        <div class="fields">
+          <label>
+            Buyer name<input name="name"
+                             autocomplete="name"
+                             required
+                             maxlength="90"
+                             value="{{ request.form.get('name', '') }}">
+          </label>
+          <label>
+            Mobile number<input type="tel"
+                                name="phone"
+                                autocomplete="tel"
+                                required
+                                maxlength="25"
+                                value="{{ request.form.get('phone', '') }}"
+                                placeholder="10-digit mobile number">
+          </label>
+          <label>
+            Email <small>(optional)</small>
+            <input type="email"
+                   name="email"
+                   autocomplete="email"
+                   maxlength="180"
+                   value="{{ request.form.get('email', '') }}">
+          </label>
+          <label>
+            Recipient name <small>(if different)</small>
+            <input name="recipient" maxlength="90" value="{{ request.form.get('recipient', '') }}">
+          </label>
+          <label class="wide">
+            Street address<textarea name="address"
+                                    autocomplete="street-address"
+                                    required
+                                    maxlength="450"
+                                    rows="2"
+                                    placeholder="House, street, area and landmark">{{ request.form.get('address','') }}</textarea>
+          </label>
+          <label>
+            Town or city<input name="city"
+                               autocomplete="address-level2"
+                               required
+                               maxlength="90"
+                               value="{{ request.form.get('city', '') }}">
+          </label>
+          <label>
+            Delivery PIN code<input name="postcode"
+                                    autocomplete="postal-code"
+                                    inputmode="numeric"
+                                    pattern="[1-9][0-9]{5}"
+                                    maxlength="6"
+                                    required
+                                    value="{{ request.form.get('postcode', '') }}">
+          </label>
+          <label>
+            Preferred delivery date<input type="date"
+                                          name="delivery_date"
+                                          min="{{ today }}"
+                                          required
+                                          value="{{ request.form.get('delivery_date', '') }}">
+          </label>
+          <label class="wide">
+            Gift message or instructions <small>(optional)</small>
+            <textarea name="message" maxlength="700" rows="3">{{ request.form.get('message','') }}</textarea>
+          </label>
+        </div>
+        <p class="muted">{{ site.delivery_info }}</p>
+      </div>
+      <aside class="panel summary payment">
+        <h2>Your order</h2>
+        {% for i in lines %}
+          <div class="line-item">
+            <span>{{ i.name }} × {{ i.qty }}</span>
+            <b>{{ i.subtotal|money }}</b>
+          </div>
+        {% endfor %}
+        <div class="total">
+          <span>Amount to pay</span>
+          <strong>{{ quote.total|money }}</strong>
+        </div>
+        {% if qr %}
+          <h3>Pay by UPI QR</h3>
+          <p>Scan in your UPI app and pay the exact total.{% if site.payee %} Check that the payee is <b>{{ site.payee }}</b>.{% endif %}
+          </p>
+          <a href="{{ qr }}"
+             target="_blank"
+             rel="noopener"
+             aria-label="Open full-size payment QR">
+            <img class="payment-qr" src="{{ qr }}" alt="Shop UPI payment QR code">
+          </a>
+          <a class="text-link" href="{{ qr }}" download>Save QR to pay on this phone</a>
+          <label>
+            UTR / UPI reference<input name="utr"
+                                      inputmode="numeric"
+                                      pattern="[0-9]{12}"
+                                      maxlength="12"
+                                      required
+                                      placeholder="12-digit transaction reference"
+                                      value="{{ request.form.get('utr', '') }}">
+          </label>
+          <button class="btn primary full">Submit order</button>
+          <small>The studio will review your payment before confirming your order.</small>
+        {% else %}
+          <p>QR payments are being set up. Contact the studio to arrange your order.</p>
+          <a class="btn outline full" href="/contact">Contact the studio</a>
+        {% endif %}
+      </aside>
+    </form>
+  </div>
+{% endblock %}

@@ -1,0 +1,164 @@
+{% from 'parts/ui.html' import icon, token, brand with context %}
+<!DOCTYPE html>
+<html lang="en-IN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="theme-color" content="#8a2445">
+    <meta name="description"
+          content="Soulful Hampers gifting studio. Explore bouquets, personalised gifts and handcrafted hampers in Bengaluru and Tumkur.">
+    <title>{{ (title ~ ' · ') if title else '' }}Soulful Hampers</title>
+    <link rel="icon" href="{{ url_for('static',filename='favicon.svg') }}">
+    <link rel="stylesheet" href="{{ url_for('static',filename='style.css') }}">
+    <script defer src="{{ url_for('static',filename='site.js') }}"></script>
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    {% block top %}
+      <div class="announcement">
+        <div>
+          {{ icon("truck") }} <span>{{ site.announcement }}</span>
+          <i>
+          </i>
+          <span>Custom Hampers</span>
+          <i>
+          </i>
+          <span>Bulk &amp; Return Gifts</span>
+          <i>
+          </i>
+          <span>Orders Across Karnataka</span>
+        </div>
+      </div>
+      <header class="site-header">
+        <div class="nav-wrap">
+          <a class="brand" href="/" aria-label="Soulful Hampers home">{{ brand() }}</a>
+          <nav class="desktop-nav" aria-label="Main navigation">
+            {% for label,href in [('Home','/'),('Shop','/shop'),('Hampers','/collections/hampers'),('Bouquets','/collections/bouquets'),('Gifts','/collections/gifts'),('Reviews','/reviews'),('Contact','/contact')] %}
+              <div class="nav-item">
+                <a class="nav-link {{ 'active' if request.path==href or (label=='Gifts' and request.path in ['/collections/diya-gifts','/collections/personalized-gifts','/collections/return-gifts']) }}"
+                   href="{{ href }}">{{ label }}</a>
+                {% if label in ["Hampers","Gifts"] %}
+                  <details class="drop">
+                    <summary aria-label="{{ label }} collections">{{ icon("chevron") }}</summary>
+                    <div class="dropdown">
+                      {% if label=="Gifts" %}
+                        {% for k in ['diya-gifts','personalized-gifts','return-gifts'] %}
+                          <a href="/collections/{{ k }}">{{ categories[k][0] }}</a>
+                        {% endfor %}
+                      {% else %}
+                        <a href="/collections/hampers">All hampers</a>
+                        <a href="/customize">Custom hampers</a>
+                        <a href="/customize?kind=Bulk+%26+return+gifts">Bulk gifting</a>
+                      {% endif %}
+                    </div>
+                  </details>
+                {% endif %}
+              </div>
+            {% endfor %}
+          </nav>
+          <div class="utilities">
+            <button class="icon-btn"
+                    data-open="search-dialog"
+                    aria-label="Search the shop">{{ icon("search") }}</button>
+            <a class="icon-btn track-link"
+               href="/track"
+               aria-label="Track an order"
+               title="Track an order">{{ icon("box") }}</a>
+            <a class="icon-btn bag-link"
+               href="/cart"
+               aria-label="Shopping bag, {{ cart_count }} items">{{ icon("bag") }}<span class="bag-count">{{ cart_count }}</span>
+            </a>
+            <button class="icon-btn mobile-menu"
+                    data-open="menu-dialog"
+                    aria-label="Open navigation">{{ icon("menu") }}</button>
+          </div>
+        </div>
+      </header>
+      <dialog id="search-dialog" class="dialog">
+        <div class="row-between">
+          <h2>Find a gift</h2>
+          <button class="icon-btn" data-close aria-label="Close search">{{ icon("x") }}</button>
+        </div>
+        <form class="tracker-form" action="/shop">
+          <input type="search"
+                 name="q"
+                 aria-label="Search gifts"
+                 placeholder="Bouquets, hampers, gifts…"
+                 required
+                 maxlength="120">
+          <button class="btn primary">Search</button>
+        </form>
+      </dialog>
+      <dialog id="menu-dialog" class="dialog menu-sheet">
+        <div class="row-between">
+          {{ brand() }}<button class="icon-btn" data-close aria-label="Close menu">{{ icon("x") }}</button>
+        </div>
+        <nav aria-label="Mobile navigation">
+          {% for label,href in [('Home','/'),('Shop all gifts','/shop'),('Hampers','/collections/hampers'),('Bouquets','/collections/bouquets'),('Gifts','/collections/gifts'),('Diya Gifts','/collections/diya-gifts'),('Personalized Gifts','/collections/personalized-gifts'),('Return Gifts','/collections/return-gifts'),('Customize a gift','/customize'),('Reviews','/reviews'),('Contact','/contact'),('Track an order','/track')] %}
+            <a href="{{ href }}">{{ label }}{{ icon("next") }}</a>
+          {% endfor %}
+        </nav>
+      </dialog>
+    {% endblock %}
+    <main id="main">
+      {% with messages=get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <div class="flash-wrap wrap" role="status">
+            {% for type,msg in messages %}
+              <div class="flash {{ type }}">{{ msg }}</div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
+      {% block content %}{% endblock %}
+    </main>
+    {% block footer %}
+      <footer>
+        <div class="wrap footer-grid">
+          <div class="foot-brand">
+            <a href="/">{{ brand() }}</a>
+            <p>Bouquets · Hampers · Personalized Gifts</p>
+            {% if site.instagram or site.youtube or site.facebook %}
+              <nav class="social-links" aria-label="Follow the studio">
+                {% for key in ['instagram','youtube','facebook'] %}
+                  {% if site[key] %}
+                    <a href="{{ site[key] }}" target="_blank" rel="noopener">{{ key|title }}</a>
+                  {% endif %}
+                {% endfor %}
+              </nav>
+            {% endif %}
+          </div>
+          <div>
+            <h3>Quick links</h3>
+            <a href="/shop">The gift shop</a>
+            <a href="/collections/hampers">Hampers</a>
+            <a href="/collections/bouquets">Bouquets</a>
+            <a href="/reviews">Reviews</a>
+          </div>
+          <div>
+            <h3>Customer care</h3>
+            <a href="/track">Track your order</a>
+            <a href="/customize">Customize a gift</a>
+            <a href="/contact">Contact the studio</a>
+          </div>
+          <div>
+            <h3>Get in touch</h3>
+            <span>{{ icon("pin") }} {{ site.region }}</span>
+            {% if site.email %}
+              <a href="mailto:{{ site.email }}">{{ icon("mail") }} {{ site.email }}</a>
+            {% endif %}
+            {% if site.whatsapp %}
+              <a href="{{ whatsapp('Hello Soulful Hampers! I have a gifting enquiry.') }}"
+                 target="_blank"
+                 rel="noopener">{{ icon("chat") }} WhatsApp the studio</a>
+            {% endif %}
+          </div>
+        </div>
+        <div class="footer-base wrap">
+          <small>© {{ today.year }} Soulful Hampers</small>
+          <a href="/admin/">Studio admin</a>
+        </div>
+      </footer>
+    {% endblock %}
+  </body>
+</html>

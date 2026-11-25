@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+  <div class="wrap page-body">
+    <div class="empty">
+      <span class="medallion">{{ icon("gift") }}</span>
+      <h1>{{ 'Page not found' if error.code==404 else error.name }}</h1>
+      <p>{{ 'This page may have moved, or the gift is no longer listed.' if error.code==404 else ('Choose a smaller upload (24 MB maximum per request).' if error.code==413 else error.description) }}</p>
+      <a class="btn outline" href="/">Return home</a>
+    </div>
+  </div>
+{% endblock %}

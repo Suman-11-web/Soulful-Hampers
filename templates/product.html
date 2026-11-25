@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block content %}
+  <div class="wrap page-body">
+    <div class="crumb">
+      <a href="/shop">The Gift Shop</a>{{ icon("next") }}<a href="/collections/{{ product.category }}">{{ categories[product.category][0] }}</a>
+    </div>
+    <div class="split product-detail">
+      <div>
+        <img class="main-image"
+             id="gallery-main"
+             src="{{ url_for('media',name=photos[0].filename) }}"
+             alt="{{ product.name }}">
+        {% if photos|length>1 %}
+          <div class="thumbnails">
+            {% for photo in photos %}
+              <button type="button"
+                      data-gallery="{{ url_for('media',name=photo.filename) }}"
+                      aria-label="View photo {{ loop.index }}"
+                      aria-pressed="{{ 'true' if loop.first else 'false' }}">
+                <img src="{{ url_for('media',name=photo.filename) }}" alt="">
+              </button>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+      <div class="detail-copy">
+        <p class="eyebrow">{{ categories[product.category][0] }}</p>
+        <h1>{{ product.name }}</h1>
+        <p class="price">{{ product.price|money }}</p>
+        <p class="preserve">{{ product.description }}</p>
+        <p class="status">{{ 'Available to order' if product.available else 'Currently sold out' }}</p>
+        {% if product.available %}
+          <form class="inline-form" action="/cart/{{ product.id }}" method="post">
+            {{ token() }}<label>Quantity<input type="number"
+                                               name="quantity"
+                                               value="1"
+                                               min="1"
+                                               max="99"
+                                               required>
+            </label>
+            <button class="btn primary">{{ icon("bag") }} Add to bag</button>
+          </form>
+        {% endif %}
+        <hr>
+        <a class="text-link" href="/customize?gift={{ product.name|urlencode }}">Ask about personalization</a>
+        <p class="muted">{{ site.delivery_info }}</p>
+      </div>
+    </div>
+  </div>
+{% endblock %}

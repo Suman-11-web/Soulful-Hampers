@@ -1,0 +1,55 @@
+{% extends "admin/base.html" %}
+{% block studio %}
+  <div class="row-between toolbar">
+    <form class="inline-form">
+      <input type="search"
+             name="q"
+             value="{{ query }}"
+             aria-label="Search products"
+             placeholder="Product name">
+      <button class="btn soft small">Search</button>
+    </form>
+    <a class="btn primary" href="/admin/products/new">Add product</a>
+  </div>
+  <div class="panel">
+    {% if rows %}
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Collection</th>
+              <th>Price</th>
+              <th>Availability</th>
+              <th>Best seller</th>
+              <th>Manage</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for p in rows %}
+              <tr>
+                <td>
+                  <a class="table-product" href="/admin/products/{{ p.id }}/edit">
+                  <img src="{{ url_for('media',name=p.cover) }}" alt="">{{ p.name }}</a>
+                </td>
+                <td>{{ categories[p.category][0] }}</td>
+                <td>{{ p.price|money }}</td>
+                <td>{{ 'Available' if p.available else 'Sold out' }}</td>
+                <td>{{ 'Yes' if p.featured else 'No' }}</td>
+                <td>
+                  <a class="text-link" href="/admin/products/{{ p.id }}/edit">Edit</a>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="empty compact">
+        <span class="medallion">{{ icon("gift") }}</span>
+        <h2>{{ 'No matching products' if query else 'Your catalogue is empty' }}</h2>
+        <p>Upload a product and its photos to make it appear in the shop.</p>
+      </div>
+    {% endif %}
+  </div>
+{% endblock %}

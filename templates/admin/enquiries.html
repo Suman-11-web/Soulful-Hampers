@@ -1,0 +1,34 @@
+{% extends "admin/base.html" %}
+{% block studio %}
+  <div class="stack">
+    {% for r in rows %}
+      <article class="panel">
+        <div class="row-between">
+          <h2>{{ r.kind }}</h2>
+          <span class="status">{{ r.status }}</span>
+        </div>
+        <p>
+          <b>{{ r.name }}</b> · {{ r.phone }} · {{ r.created|nice_time }}
+        </p>
+        {% if r.order_ref %}
+          <p>Order reference · {{ r.order_ref }}</p>
+        {% endif %}
+        <p class="preserve">{{ r.message }}</p>
+        <form class="inline-form" method="post">
+          {{ token() }}<input type="hidden" name="id" value="{{ r.id }}">
+          <select name="status" aria-label="Enquiry status">
+            {% for s in statuses %}
+              <option {{ 'selected' if r.status==s }}>{{ s }}</option>
+            {% endfor %}
+          </select>
+          <button class="btn soft small">Update enquiry</button>
+        </form>
+      </article>
+    {% else %}
+      <div class="panel empty compact">
+        <h2>No enquiries yet</h2>
+        <p>Custom requests and customer messages will appear here.</p>
+      </div>
+    {% endfor %}
+  </div>
+{% endblock %}

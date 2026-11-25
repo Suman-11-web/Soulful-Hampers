@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block top %}
+  <header class="admin-head">
+    <div class="wrap row-between">
+      <a href="/admin/">{{ brand() }}</a>
+      <div class="inline-form">
+        <a class="text-link" href="/">View shop</a>
+        <form method="post" action="/admin/logout">
+          {{ token() }}<button class="btn small outline">Sign out</button>
+        </form>
+      </div>
+    </div>
+  </header>
+  <nav class="admin-nav" aria-label="Studio tools">
+    <div class="wrap">
+      {% for path,label in [('/admin/','Overview'),('/admin/products','Products'),('/admin/orders','Orders'),('/admin/enquiries','Enquiries'),('/admin/reports','Sales reports'),('/admin/settings','Store settings'),('/admin/reviews','Reviews'),('/admin/account','Account')] %}
+        <a class="{{ 'selected' if request.path==path or (path!='/admin/' and request.path.startswith(path+'/')) }}"
+           href="{{ path }}">{{ label }}</a>
+      {% endfor %}
+    </div>
+  </nav>
+{% endblock %}
+{% block content %}
+  <div class="wrap admin-body">
+    <p class="eyebrow">Studio dashboard</p>
+    <h1>{{ title }}</h1>
+    {% block studio %}{% endblock %}
+  </div>
+{% endblock %}
+{% block footer %}{% endblock %}

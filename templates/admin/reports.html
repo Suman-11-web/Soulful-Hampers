@@ -1,0 +1,54 @@
+{% extends "admin/base.html" %}
+{% block studio %}
+  <form class="toolbar inline-form">
+    <label>
+      From<input type="date" name="start" value="{{ start }}" required>
+    </label>
+    <label>
+      Through<input type="date" name="end" value="{{ end }}" required>
+    </label>
+    <button class="btn soft small">Apply range</button>
+    <button class="btn outline small" name="download" value="csv">Download CSV</button>
+  </form>
+  <div class="metrics">
+    <div class="metric">
+      <span>Orders received</span>
+      <strong>{{ rows|length }}</strong>
+    </div>
+    <div class="metric">
+      <span>Verified payments</span>
+      <strong>{{ count }}</strong>
+    </div>
+    <div class="metric">
+      <span>Verified sales</span>
+      <strong>{{ total|money }}</strong>
+    </div>
+  </div>
+  <section class="panel">
+    <h2>Products by verified sales</h2>
+    {% if ranking %}
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Units</th>
+              <th>Sales</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for name,qty,revenue in ranking %}
+              <tr>
+                <td>{{ name }}</td>
+                <td>{{ qty }}</td>
+                <td>{{ revenue|money }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p>No verified sales in this period.</p>
+    {% endif %}
+  </section>
+{% endblock %}

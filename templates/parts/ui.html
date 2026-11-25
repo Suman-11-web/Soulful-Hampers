@@ -1,0 +1,77 @@
+{% macro icon(name, cls='') -%}
+  <svg class="ico {{ cls }}" aria-hidden="true" focusable="false">
+    <use href="{{ url_for('static', filename='icons.svg') }}#{{ name }}" />
+  </svg>
+{%- endmacro %}
+{% macro token() -%}
+  <input type="hidden" name="_csrf" value="{{ csrf() }}">
+{%- endmacro %}
+{% macro section_title(text) -%}
+  <div class="section-title">
+    <span></span>
+    <h2>{{ text }}</h2>
+    <span></span>
+  </div>
+{%- endmacro %}
+{% macro brand() -%}
+  <img class="wordmark"
+       src="{{ url_for('artwork',key='wordmark') }}"
+       width="205"
+       height="49"
+       alt="Soulful Hampers">
+{%- endmacro %}
+{% macro product_card(p) %}
+  <article class="product-card">
+    <a href="{{ url_for('shop.product',pid=p.id) }}">
+      <img loading="lazy" src="{{ url_for('media',name=p.cover) }}" alt="{{ p.name }}">
+      <div class="product-info">
+        <small>{{ categories[p.category][0] }}</small>
+        <h3>{{ p.name }}</h3>
+      </div>
+    </a>
+    <div class="product-foot">
+      <b>{{ p.price|money }}</b>
+      {% if p.available %}
+        <form action="{{ url_for('shop.change_cart',pid=p.id) }}" method="post">
+          {{ token() }}<button class="mini">{{ icon("bag") }} Add to bag</button>
+        </form>
+      {% else %}
+        <small>Sold out</small>
+      {% endif %}
+    </div>
+  </article>
+{% endmacro %}
+{% macro review_card(r) %}
+  <article class="review-card">
+    <div class="review-head">
+      {% if r.photo %}
+        <img src="{{ url_for('static',filename='art/'+r.photo) }}"
+             loading="lazy"
+             width="46"
+             height="46"
+             alt="">
+      {% else %}
+        <span class="initial">{{ r.name[:1] }}</span>
+      {% endif %}
+      <div>
+        <h3>{{ r.name }}</h3>
+        <span class="stars" aria-label="{{ r.stars }} out of 5 stars">{{ '★' * r.stars }}</span>
+      </div>
+      <span class="quote-mark" aria-hidden="true">”</span>
+    </div>
+    <p>“{{ r.review }}”</p>
+  </article>
+{% endmacro %}
+{% macro tracker() %}
+  <form class="tracker-form" method="post" action="{{ url_for('shop.track') }}">
+    {{ token() }}<label class="sr" for="lookup">Order ID or mobile number</label>
+    <input type="search"
+           id="lookup"
+           name="lookup"
+           value="{{ request.form.get('lookup', '') }}"
+           placeholder="Order ID or mobile number"
+           maxlength="60"
+           required>
+    <button class="btn primary">Track order</button>
+  </form>
+{% endmacro %}

@@ -1,0 +1,24 @@
+{% extends "admin/base.html" %}
+{% block studio %}
+  <form class="toolbar inline-form">
+    <input type="search"
+           name="q"
+           value="{{ q }}"
+           placeholder="Order ID, name, mobile or UTR"
+           aria-label="Search orders">
+    <select name="payment" aria-label="Payment">
+      <option value="">All payments</option>
+      {% for v in payments %}
+        <option {{ 'selected' if request.args.payment==v }}>{{ v }}</option>
+      {% endfor %}
+    </select>
+    <select name="status" aria-label="Fulfilment">
+      <option value="">All order statuses</option>
+      {% for v in statuses %}
+        <option {{ 'selected' if request.args.status==v }}>{{ v }}</option>
+      {% endfor %}
+    </select>
+    <button class="btn soft small">Apply filters</button>
+  </form>
+  <div class="panel">{% include "admin/order_table.html" %}</div>
+{% endblock %}

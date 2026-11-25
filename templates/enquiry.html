@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block content %}
+  {% set intro = 'Tell us who it’s for and what you have in mind.' if custom else 'For order enquiries, delivery questions and thoughtful gifting ideas.' %}
+  {% include "parts/page_head.html" %}
+  <div class="wrap page-body split enquiry-layout">
+    <form class="panel form-panel" method="post">
+      {{ token() }}
+      <h2>{{ 'Plan a custom gift' if custom else 'Send an enquiry' }}</h2>
+      <div class="fields">
+        <label>
+          Name<input name="name"
+                     autocomplete="name"
+                     required
+                     maxlength="90"
+                     value="{{ request.form.get('name', '') }}">
+        </label>
+        <label>
+          Mobile number<input type="tel"
+                              name="phone"
+                              autocomplete="tel"
+                              required
+                              maxlength="25"
+                              value="{{ request.form.get('phone', '') }}">
+        </label>
+        <label>
+          Enquiry type<select name="kind">
+          {% set choice = request.values.get('kind','Order enquiry' if ref else ('Custom gift' if custom else 'General enquiry')) %}
+          {% for k in ['Custom gift','Bulk & return gifts','Order enquiry','Delivery','General enquiry'] %}
+            <option {{ 'selected' if k==choice }}>{{ k }}</option>
+          {% endfor %}
+          </select>
+        </label>
+        <label>
+          Order ID <small>(if available)</small>
+          <input name="order" value="{{ ref }}" maxlength="40">
+        </label>
+        <label class="wide">
+          {{ 'Your gifting brief' if custom else 'Message' }}<textarea name="message"
+                                                                       rows="5"
+                                                                       required
+                                                                       maxlength="2000"
+                                                                       placeholder="{{ 'Tell us the occasion, budget, quantity, delivery date and personal touches.' if custom else 'How can we help?' }}">{{ request.form.get('message','I’m interested in ' ~ request.args.gift ~ '.' if request.args.gift else '') }}</textarea>
+        </label>
+      </div>
+      <button class="btn primary">{{ 'Send custom request' if custom else 'Send enquiry' }}</button>
+    </form>
+    <aside class="enquiry-aside">
+      <img src="{{ url_for('artwork',key='hero') }}"
+           alt="A rose bouquet and curated pink hamper">
+      <div>
+        <h2>The gifting studio</h2>
+        <p>{{ icon("pin") }} {{ site.region }}</p>
+        <p>{{ site.delivery_info }}</p>
+        {% if site.email %}
+          <a class="text-link" href="mailto:{{ site.email }}">{{ site.email }}</a>
+        {% endif %}
+        {% if site.whatsapp %}
+          <p>
+            <a class="btn whatsapp"
+               href="{{ whatsapp('Hello Soulful Hampers! I have an enquiry. ' ~ ref) }}"
+               target="_blank"
+               rel="noopener">{{ icon("chat") }} Chat on WhatsApp</a>
+          </p>
+        {% endif %}
+      </div>
+    </aside>
+  </div>
+{% endblock %}

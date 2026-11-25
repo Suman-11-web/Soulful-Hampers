@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+  <div class="wrap page-body">
+    <section class="result-panel">
+      <span class="medallion">{{ icon("check") }}</span>
+      <p class="eyebrow">Order received</p>
+      <h1>Thank you, {{ order.name }}.</h1>
+      <p>Your order has reached our studio. We’ll check the UPI payment and update your order status.</p>
+      <div class="receipt">
+        <span>Your order ID</span>
+        <b>{{ order.id }}</b>
+        <small>{{ order.total|money }} · Payment {{ order.payment|lower }}</small>
+      </div>
+      <div class="button-row">
+        <a class="btn primary" href="/track">Track your order</a>
+        <a class="btn outline" href="/contact?order={{ order.id }}">Order enquiry</a>
+      </div>
+      {% if site.whatsapp %}
+        <a class="btn whatsapp"
+           href="{{ whatsapp('Hello Soulful Hampers! Please confirm my order ' ~ order.id ~ '. I have submitted my payment reference.') }}"
+           target="_blank"
+           rel="noopener">{{ icon("chat") }} Confirm on WhatsApp</a>
+      {% endif %}
+    </section>
+  </div>
+{% endblock %}

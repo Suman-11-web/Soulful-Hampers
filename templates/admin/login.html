@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+  <div class="wrap page-body">
+    <section class="panel login-panel">
+      <span class="medallion">{{ icon("lock") }}</span>
+      <p class="eyebrow">Soulful Hampers</p>
+      <h1>Studio sign in</h1>
+      <form method="post" class="stack">
+        {{ token() }}<label>Username<input name="username" autocomplete="username" required maxlength="80">
+        </label>
+        <label>
+          Password<input type="password" name="password" autocomplete="current-password" required>
+        </label>
+        <button class="btn primary">Sign in</button>
+      </form>
+    </section>
+  </div>
+{% endblock %}

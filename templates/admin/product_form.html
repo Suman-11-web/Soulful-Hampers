@@ -1,0 +1,79 @@
+{% extends "admin/base.html" %}
+{% block studio %}
+  <form class="panel form-panel" enctype="multipart/form-data" method="post">
+    {{ token() }}
+    <div class="fields">
+      <label>
+        Product name<input name="name"
+                           maxlength="120"
+                           required
+                           value="{{ request.form.get('name',prod.name if prod else '') }}">
+      </label>
+      <label>
+        Collection<select name="category">
+        {% for k,v in categories.items() %}
+          <option value="{{ k }}"
+                  {{ 'selected' if request.form.get('category',prod.category if prod else '')==k }}>{{ v[0] }}</option>
+        {% endfor %}
+        </select>
+      </label>
+      <label>
+        Price in rupees<input type="number"
+                              step="0.01"
+                              min=".01"
+                              max="10000000"
+                              name="price"
+                              required
+                              value="{{ request.form.get('price',prod.price/100 if prod else '') }}">
+      </label>
+      <label class="wide">
+        Description<textarea name="description" rows="4" maxlength="4000" required>{{ request.form.get('description',prod.description if prod else '') }}</textarea>
+      </label>
+      <label class="wide">
+        Product photos<input type="file"
+                             name="images"
+                             accept="image/png,image/jpeg,image/webp"
+                             multiple
+                             {{ 'required' if not photos }}>
+        <small>Keep 1–8 photos. The first photo is the cover. Up to 24 MB per submission.</small>
+      </label>
+    </div>
+    {% if photos %}
+      <div class="edit-photos">
+        {% for p in photos %}
+          <label>
+            <img src="{{ url_for('media',name=p.filename) }}"
+                 alt="Product photo {{ loop.index }}">
+            <span>
+              <input type="checkbox" name="remove" value="{{ p.id }}">
+            Remove</span>
+          </label>
+        {% endfor %}
+      </div>
+    {% endif %}
+    <div class="checks">
+      <label>
+        <input type="checkbox"
+               name="available"
+               {{ 'checked' if ('available' in request.form if request.method=='POST' else not prod or prod.available) }}> Available to order
+      </label>
+      <label>
+        <input type="checkbox"
+               name="featured"
+               {{ 'checked' if ('featured' in request.form if request.method=='POST' else prod and prod.featured) }}> Show in Our Best Sellers
+      </label>
+    </div>
+    <div class="button-row">
+      <button class="btn primary">Save product</button>
+      <a class="text-link" href="/admin/products">Back to products</a>
+    </div>
+  </form>
+  {% if prod %}
+    <form method="post"
+          action="/admin/products/{{ prod.id }}/delete"
+          class="section-space"
+          data-confirm="Remove this product from the shop? Existing orders will retain their details.">
+      {{ token() }}<button class="btn outline small">{{ icon("trash") }} Delete product</button>
+    </form>
+  {% endif %}
+{% endblock %}

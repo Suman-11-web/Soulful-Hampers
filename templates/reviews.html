@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% from 'parts/ui.html' import review_card with context %}
+{% block content %}
+  {% set intro = "A few words from the people who chose our gifts." %}
+  {% include "parts/page_head.html" %}
+  <div class="wrap page-body">
+    <div class="review-grid">
+      {% for r in reviews %}{{ review_card(r) }}{% else %}
+        <p>Customer reviews will appear here.</p>
+      {% endfor %}
+    </div>
+    <div class="center section-space">
+      <a class="btn outline" href="/contact">Share your experience</a>
+    </div>
+  </div>
+{% endblock %}
